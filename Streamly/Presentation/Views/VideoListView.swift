@@ -8,35 +8,44 @@
 import SwiftUI
 
 struct VideoListView: View {
-    let videos = [
-        Video(id: 1, width: 1920, height: 1080, duration: 120, image: nil, user: VideoUser(id: 1, name: "Yoda"), videoFiles: nil),
-        Video(id: 2, width: 1280, height: 720, duration: 90, image: nil, user: VideoUser(id: 2, name: "Anakin"), videoFiles: nil),
-        Video(id: 3, width: nil, height: nil, duration: nil, image: nil, user: nil, videoFiles: nil)
-    ]
-
+    @StateObject private var viewModel = VideoListViewModel()
+    @State private var selectedVideo: Video?
+    
     var body: some View {
         NavigationView {
-            List(videos) { video in
-                VStack(alignment: .leading) {
-                    Text("Video ID: \(video.id)")
-                        .font(.headline)
-                    if let duration = video.duration {
-                        Text("Duration: \(duration) seconds")
-                            .font(.subheadline)
+            Group {
+                if viewModel.isLoading {
+                    ProgressView("Loading...")
+                } else if let error = viewModel.errorMessage {
+                    VStack {
+                        Text("Error: \(error)")
+                        Button("Retry") {
+                            viewModel.fetchVideos()
+                        }
                     }
-                    if let userName = video.user?.name {
-                        Text("User: \(userName)")
-                            .font(.caption)
-                            .foregroundColor(.gray)
+                } else {
+                    List(viewModel.videos) { video in
+                        VideoRowView(video: video) {
+                            selectedVideo = video
+                        }
                     }
+                    .listStyle(PlainListStyle())
                 }
-                .padding(.vertical, 4)
             }
             .navigationTitle("Streamly")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(action: viewModel.fetchVideos) {
+                        Image(systemName: "arrow.clockwise")
+                    }
+                }
+            }
+            .onAppear {
+                viewModel.fetchVideos()
+            }
+            .sheet(item: $selectedVideo) { video in
+                VideoPlayerContainer(video: video)
+            }
         }
     }
-}
-
-#Preview {
-    VideoListView()
 }
