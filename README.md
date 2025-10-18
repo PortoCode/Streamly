@@ -8,7 +8,7 @@ A minimal video streaming app built with Swift, UIKit, and SwiftUI.
 - UIKit + SwiftUI
 - AVKit / AVFoundation
 - Combine
-- Realm (or CoreData)
+- Realm
 - Firebase Cloud Messaging
 - REST API integration
 - CI/CD with GitHub Actions
