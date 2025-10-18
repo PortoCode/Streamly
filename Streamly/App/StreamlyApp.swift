@@ -9,9 +9,13 @@ import SwiftUI
 
 @main
 struct StreamlyApp: App {
+    init() {
+        
+    }
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            Text("StreamlyApp")
         }
     }
 }

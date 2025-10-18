@@ -1,0 +1,127 @@
+# ========================
+# Xcode & macOS
+# ========================
+
+## Build generated
+build/
+DerivedData/
+
+## User-specific files
+*.xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+
+## Xcode workspace
+*.xcworkspace/xcshareddata/
+*.xcworkspace/xcuserdata/
+
+## Scheme management
+xcuserdata
+xcshareddata
+
+## macOS files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ========================
+# Swift & iOS
+# ========================
+
+## Swift Package Manager
+Packages/
+Package.pins
+Package.resolved
+.swiftpm/
+.build/
+
+## CocoaPods
+Pods/
+Podfile.lock
+
+## Carthage
+Carthage/Build/
+Carthage/Checkouts/
+Carthage/Support/
+
+## Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output/
+
+# ========================
+# Firebase & Realm
+# ========================
+
+## Firebase
+GoogleService-Info.plist
+
+## Realm
+default.realm
+default.realm.lock
+default.realm.management/
+default.realm.note
+*.realm
+*.realm.lock
+*.realm.management/
+
+# ========================
+# Playgrounds
+# ========================
+
+timeline.xctimeline
+playground.xcworkspace
+
+# ========================
+# Logs & Temp
+# ========================
+
+*.log
+*.tmp
+*.swp
+*.bak
+*.orig
+*.rej
+
+# ========================
+# System files
+# ========================
+
+ehthumbs.db
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# ========================
+# App-specific cache
+# ========================
+
+Streamly/Resources/Cache/
+Streamly/Resources/Downloads/
+Streamly/Resources/Temp/
+
+# ========================
+# SwiftLint
+# ========================
+
+.swiftlint.yml
+
+# ========================
+# Env files
+# ========================
+
+.env
+.env.local
+.env.development
+.env.production
+
+# ========================
+# Xcode 15 (new build cache)
+# ========================
+
+.xcresult/
+.xcodeproj/project.xcworkspace/
+.xcodeproj/xcuserdata/
+*.xcarchive
