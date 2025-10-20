@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		6D03A4D32EA5AEBE00F309C7 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 6D03A4D22EA5AEBE00F309C7 /* RealmSwift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		6D03A4232EA3382100F309C7 /* Streamly.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Streamly.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6D03A4D32EA5AEBE00F309C7 /* RealmSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +70,7 @@
 			);
 			name = Streamly;
 			packageProductDependencies = (
+				6D03A4D22EA5AEBE00F309C7 /* RealmSwift */,
 			);
 			productName = Streamly;
 			productReference = 6D03A4232EA3382100F309C7 /* Streamly.app */;
@@ -95,6 +101,7 @@
 			mainGroup = 6D03A41A2EA3382100F309C7;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				6D03A4D12EA5AEBE00F309C7 /* XCRemoteSwiftPackageReference "realm-cocoa" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 6D03A4242EA3382100F309C7 /* Products */;
@@ -326,6 +333,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		6D03A4D12EA5AEBE00F309C7 /* XCRemoteSwiftPackageReference "realm-cocoa" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-cocoa";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.54.6;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6D03A4D22EA5AEBE00F309C7 /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6D03A4D12EA5AEBE00F309C7 /* XCRemoteSwiftPackageReference "realm-cocoa" */;
+			productName = RealmSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 6D03A41B2EA3382100F309C7 /* Project object */;
 }
