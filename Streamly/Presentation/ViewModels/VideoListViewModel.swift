@@ -34,8 +34,29 @@ final class VideoListViewModel: ObservableObject {
                     self?.errorMessage = err.localizedDescription
                 }
             } receiveValue: { [weak self] videos in
-                self?.videos = videos
+                let favorites = self?.repository.fetchFavorites() ?? []
+                let favoriteIDs = Set(favorites.map { $0.id })
+                let merged = videos.map { video -> Video in
+                    var v = video
+                    v.isFavorite = favoriteIDs.contains(video.id)
+                    return v
+                }
+                self?.videos = merged
             }
             .store(in: &cancellables)
+    }
+    
+    func toggleFavorite(_ video: Video) {
+        var v = video
+        v.isFavorite.toggle()
+        if v.isFavorite {
+            repository.saveFavorite(video: v)
+        } else {
+            repository.removeFavorite(videoId: v.id)
+        }
+        
+        if let idx = videos.firstIndex(where: { $0.id == v.id }) {
+            videos[idx] = v
+        }
     }
 }
