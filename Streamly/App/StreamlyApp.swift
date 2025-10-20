@@ -9,6 +9,10 @@ import SwiftUI
 
 @main
 struct StreamlyApp: App {
+    init() {
+        RealmManager.shared.setupRealm()
+    }
+    
     var body: some Scene {
         WindowGroup {
             VideoListView()
