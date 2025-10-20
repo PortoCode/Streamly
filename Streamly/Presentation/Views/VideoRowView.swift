@@ -10,6 +10,7 @@ import SwiftUI
 struct VideoRowView: View {
     let video: Video
     let onTap: () -> Void
+    let onFavorite: () -> Void
     
     var body: some View {
         HStack(alignment: .center) {
@@ -39,6 +40,14 @@ struct VideoRowView: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
+            
+            Spacer()
+            
+            Button(action: onFavorite) {
+                Image(systemName: video.isFavorite ? "heart.fill" : "heart")
+                    .imageScale(.large)
+            }
+            .buttonStyle(.plain)
         }
         .padding(.vertical, 8)
         .onTapGesture(perform: onTap)

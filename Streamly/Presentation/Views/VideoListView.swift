@@ -25,9 +25,11 @@ struct VideoListView: View {
                     }
                 } else {
                     List(viewModel.videos) { video in
-                        VideoRowView(video: video) {
+                        VideoRowView(video: video, onTap: {
                             selectedVideo = video
-                        }
+                        }, onFavorite: {
+                            viewModel.toggleFavorite(video)
+                        })
                     }
                     .listStyle(PlainListStyle())
                 }
