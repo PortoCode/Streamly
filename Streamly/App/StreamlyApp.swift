@@ -10,7 +10,7 @@ import SwiftUI
 @main
 struct StreamlyApp: App {
     init() {
-        RealmManager.shared.setupRealm()
+        RealmManager.shared.initialize()
     }
     
     var body: some Scene {
