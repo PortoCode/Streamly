@@ -10,39 +10,45 @@ import Combine
 import RealmSwift
 
 protocol VideoRepositoryProtocol {
-    func getPopularVideos() -> AnyPublisher<[Video], APIError>
-    func saveFavorite(video: Video)
-    func removeFavorite(videoId: Int)
-    func fetchFavorites() -> [Video]
+    func fetchVideos() -> AnyPublisher<[Video], Error>
+    func save(_ video: Video)
+    func remove(videoId: Int)
+    func fetchPersistedVideos() -> [Video]
 }
 
 final class VideoRepository: VideoRepositoryProtocol {
-    private let apiClient = PexelsAPIClient()
-    private let realm = try! Realm()
+    private let apiClient: PexelsAPIClient
+    private let realmManager = RealmManager.shared
     
-    func getPopularVideos() -> AnyPublisher<[Video], APIError> {
-        return apiClient.fetchPopularVideos()
+    init(apiClient: PexelsAPIClient = PexelsAPIClient()) {
+        self.apiClient = apiClient
+    }
+    
+    func fetchVideos() -> AnyPublisher<[Video], Error> {
+        apiClient.fetchPopularVideos()
             .map { $0.videos }
+            .mapError { $0 as Error }
+            .catch { _ in
+                let cachedVideos = self.realmManager
+                    .fetchAll(RealmVideoObject.self)
+                    .map { $0.toVideo() }
+                return Just(Array(cachedVideos))
+                    .setFailureType(to: Error.self)
+                    .eraseToAnyPublisher()
+            }
             .eraseToAnyPublisher()
     }
     
-    func saveFavorite(video: Video) {
-        let object = RealmVideoObject(from: video)
-        try? realm.write {
-            realm.add(object, update: .modified)
-        }
+    func save(_ video: Video) {
+        realmManager.save(RealmVideoObject(from: video))
     }
     
-    func removeFavorite(videoId: Int) {
-        if let object = realm.object(ofType: RealmVideoObject.self, forPrimaryKey: videoId) {
-            try? realm.write {
-                realm.delete(object)
-            }
-        }
+    func remove(videoId: Int) {
+        realmManager.delete(RealmVideoObject.self, forPrimaryKey: videoId)
     }
     
-    func fetchFavorites() -> [Video] {
-        let objects = realm.objects(RealmVideoObject.self)
+    func fetchPersistedVideos() -> [Video] {
+        let objects = realmManager.fetchAll(RealmVideoObject.self)
         return objects.map { $0.toVideo() }
     }
 }
