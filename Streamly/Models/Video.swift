@@ -18,6 +18,7 @@ struct Video: Identifiable, Codable, Equatable {
     
     var isFavorite: Bool = false
     var isDownloaded: Bool = false
+    var localFilePath: String? = nil
     
     enum CodingKeys: String, CodingKey {
         case id, width, height, duration, image, user
