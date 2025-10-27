@@ -11,37 +11,46 @@ import Combine
 final class VideoListViewModel: ObservableObject {
     @Published var videos: [Video] = []
     @Published var isLoading: Bool = false
-    @Published var errorMessage: String?
+    @Published var errorMessage: String? = nil
     
     private var cancellables = Set<AnyCancellable>()
-    private let getPopularUseCase: GetPopularVideosUseCase
     private let repository: VideoRepositoryProtocol
     
-    init(getPopularUseCase: GetPopularVideosUseCase = GetPopularVideosUseCase(), repository: VideoRepositoryProtocol = VideoRepository()) {
-        self.getPopularUseCase = getPopularUseCase
+    init(repository: VideoRepositoryProtocol = VideoRepository()) {
         self.repository = repository
     }
     
     func fetchVideos() {
         isLoading = true
-        errorMessage = nil
         
-        getPopularUseCase.execute()
+        repository.fetchVideos()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
-                self?.isLoading = false
-                if case let .failure(err) = completion {
-                    self?.errorMessage = err.localizedDescription
+                guard let self else { return }
+                self.isLoading = false
+                if case let .failure(error) = completion {
+                    self.errorMessage = error.localizedDescription
                 }
-            } receiveValue: { [weak self] videos in
-                let favorites = self?.repository.fetchFavorites() ?? []
-                let favoriteIDs = Set(favorites.map { $0.id })
-                let merged = videos.map { video -> Video in
-                    var v = video
-                    v.isFavorite = favoriteIDs.contains(video.id)
-                    return v
+            } receiveValue: { [weak self] apiVideos in
+                guard let self else { return }
+                
+                let localVideos = repository.fetchPersistedVideos()
+                let localById = Dictionary(uniqueKeysWithValues: localVideos.map { ($0.id, $0) })
+                
+                let merged = apiVideos.map { apiVideo -> Video in
+                    if let local = localById[apiVideo.id] {
+                        var mergedVideo = apiVideo
+                        mergedVideo.isFavorite = local.isFavorite
+                        mergedVideo.isDownloaded = local.isDownloaded
+                        mergedVideo.isDownloaded = local.isDownloaded
+                        mergedVideo.localFilePath = local.localFilePath
+                        return mergedVideo
+                    } else {
+                        return apiVideo
+                    }
                 }
-                self?.videos = merged
+                
+                self.videos = merged
             }
             .store(in: &cancellables)
     }
@@ -49,10 +58,49 @@ final class VideoListViewModel: ObservableObject {
     func toggleFavorite(_ video: Video) {
         var v = video
         v.isFavorite.toggle()
-        if v.isFavorite {
-            repository.saveFavorite(video: v)
+        
+        if !v.isFavorite && !v.isDownloaded {
+            repository.remove(videoId: v.id)
         } else {
-            repository.removeFavorite(videoId: v.id)
+            repository.save(v)
+        }
+        
+        if let idx = videos.firstIndex(where: { $0.id == v.id }) {
+            videos[idx] = v
+        }
+    }
+    
+    func downloadVideo(_ video: Video) {
+        VideoDownloadManager.shared.downloadVideo(video)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                guard let self else { return }
+                if case let .failure(error) = completion {
+                    self.errorMessage = error.localizedDescription
+                }
+            } receiveValue: { [weak self] localURL in
+                guard let self else { return }
+                
+                if let index = videos.firstIndex(where: { $0.id == video.id }) {
+                    videos[index].isDownloaded = true
+                    videos[index].localFilePath = localURL.path
+                    repository.save(videos[index])
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    func removeDownload(_ video: Video) {
+        VideoDownloadManager.shared.removeDownload(for: video)
+        
+        var v = video
+        v.isDownloaded = false
+        v.localFilePath = nil
+        
+        if !v.isFavorite {
+            repository.remove(videoId: v.id)
+        } else {
+            repository.save(v)
         }
         
         if let idx = videos.firstIndex(where: { $0.id == v.id }) {
