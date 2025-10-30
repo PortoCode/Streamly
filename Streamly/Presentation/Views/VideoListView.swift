@@ -29,6 +29,10 @@ struct VideoListView: View {
                             selectedVideo = video
                         }, onFavorite: {
                             viewModel.toggleFavorite(video)
+                        }, onDownload: {
+                            viewModel.downloadVideo(video)
+                        }, onRemoveDownload: {
+                            viewModel.removeDownload(video)
                         })
                     }
                     .listStyle(PlainListStyle())
