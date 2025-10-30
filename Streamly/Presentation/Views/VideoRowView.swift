@@ -11,6 +11,8 @@ struct VideoRowView: View {
     let video: Video
     let onTap: () -> Void
     let onFavorite: () -> Void
+    let onDownload: () -> Void
+    let onRemoveDownload: () -> Void
     
     var body: some View {
         HStack(alignment: .center) {
@@ -41,13 +43,26 @@ struct VideoRowView: View {
                     .foregroundStyle(.secondary)
             }
             
-            Spacer()
-            
-            Button(action: onFavorite) {
-                Image(systemName: video.isFavorite ? "heart.fill" : "heart")
-                    .imageScale(.large)
+            HStack {
+                Spacer()
+                Button(action: {
+                    if video.isDownloaded {
+                        onRemoveDownload()
+                    } else {
+                        onDownload()
+                    }
+                }) {
+                    Image(systemName: video.isDownloaded ? "arrow.down.circle.fill" : "arrow.down.circle")
+                        .imageScale(.large)
+                }
+                .buttonStyle(.plain)
+                
+                Button(action: onFavorite) {
+                    Image(systemName: video.isFavorite ? "heart.fill" : "heart")
+                        .imageScale(.large)
+                }
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
         }
         .padding(.vertical, 8)
         .onTapGesture(perform: onTap)
