@@ -19,6 +19,8 @@ struct VideoListView: View {
                 } else if let error = viewModel.errorMessage {
                     VStack {
                         Text("Error: \(error)")
+                            .foregroundStyle(.red)
+                            .padding()
                         Button("Retry") {
                             viewModel.fetchVideos()
                         }
