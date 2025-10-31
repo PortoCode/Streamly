@@ -10,18 +10,19 @@ import AVKit
 
 struct VideoPlayerContainer: UIViewControllerRepresentable {
     let video: Video
+    var autoplay: Bool = false
     
     func makeUIViewController(context: Context) -> UIViewController {
         if let localPath = video.localFilePath,
            FileManager.default.fileExists(atPath: localPath) {
             let localURL = URL(fileURLWithPath: localPath)
-            return VideoPlayerViewController(url: localURL)
+            return VideoPlayerViewController(url: localURL, autoplay: autoplay)
         }
         
         if let remoteURL = video.videoFiles?
             .sorted(by: { ($0.quality ?? "") > ($1.quality ?? "") })
             .first?.link {
-            return VideoPlayerViewController(url: remoteURL)
+            return VideoPlayerViewController(url: remoteURL, autoplay: autoplay)
         }
         
         let emptyVC = UIViewController()

@@ -10,11 +10,13 @@ import AVKit
 
 final class VideoPlayerViewController: UIViewController {
     private let videoURL: URL
+    private let autoplay: Bool
     private var player: AVPlayer?
     private var playerLayer: AVPlayerLayer?
     
-    init(url: URL) {
+    init(url: URL, autoplay: Bool = false) {
         self.videoURL = url
+        self.autoplay = autoplay
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -43,7 +45,9 @@ final class VideoPlayerViewController: UIViewController {
         if let layer = playerLayer {
             view.layer.addSublayer(layer)
         }
-        player?.play()
+        if autoplay {
+            player?.play()
+        }
     }
     
     private func setupControls() {
@@ -103,8 +107,8 @@ struct VideoPlayerViewController_Previews: PreviewProvider {
             isDownloaded: false,
             localFilePath: nil
         )
-
-        return VideoPlayerContainer(video: video)
+        
+        return VideoPlayerContainer(video: video, autoplay: false)
             .edgesIgnoringSafeArea(.all)
             .previewDisplayName("Video Player (via Container)")
     }
