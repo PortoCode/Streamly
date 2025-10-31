@@ -11,8 +11,11 @@ import AVKit
 final class VideoPlayerViewController: UIViewController {
     private let videoURL: URL
     private let autoplay: Bool
+    
     private var player: AVPlayer?
     private var playerLayer: AVPlayerLayer?
+    private var progressSlider: UISlider?
+    private var timeObserver: Any?
     
     init(url: URL, autoplay: Bool = false) {
         self.videoURL = url
@@ -29,6 +32,7 @@ final class VideoPlayerViewController: UIViewController {
         view.backgroundColor = .black
         setupPlayer()
         setupControls()
+        setupProgressObserver()
     }
     
     override func viewDidLayoutSubviews() {
@@ -51,12 +55,18 @@ final class VideoPlayerViewController: UIViewController {
     }
     
     private func setupControls() {
+        let slider = UISlider()
+        slider.translatesAutoresizingMaskIntoConstraints = false
+        slider.addTarget(self, action: #selector(sliderValueChanged(_:)), for: .valueChanged)
+        view.addSubview(slider)
+        self.progressSlider = slider
+        
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(
             autoplay
-                ? UIImage(systemName: "pause.fill")
-                : UIImage(systemName: "play.fill"),
+            ? UIImage(systemName: "pause.fill")
+            : UIImage(systemName: "play.fill"),
             for: .normal
         )
         button.setTitleColor(.white, for: .normal)
@@ -64,11 +74,41 @@ final class VideoPlayerViewController: UIViewController {
         view.addSubview(button)
         
         NSLayoutConstraint.activate([
+            slider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            slider.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            slider.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80),
+            
             button.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             button.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -36),
             button.widthAnchor.constraint(equalToConstant: 80),
             button.heightAnchor.constraint(equalToConstant: 44)
         ])
+    }
+    
+    private func setupProgressObserver() {
+        let interval = CMTime(seconds: 0.1, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+        timeObserver = player?.addPeriodicTimeObserver(
+            forInterval: interval,
+            queue: .main
+        ) { [weak self] time in
+            self?.updateProgress(time)
+        }
+    }
+    
+    private func updateProgress(_ currentTime: CMTime) {
+        guard let duration = player?.currentItem?.duration,
+              duration.isNumeric else { return }
+        
+        let durationSeconds = CMTimeGetSeconds(duration)
+        let currentSeconds = CMTimeGetSeconds(currentTime)
+        
+        progressSlider?.maximumValue = Float(durationSeconds)
+        progressSlider?.value = Float(currentSeconds)
+    }
+    
+    @objc private func sliderValueChanged(_ slider: UISlider) {
+        let newTime = CMTime(seconds: Double(slider.value), preferredTimescale: 600)
+        player?.seek(to: newTime)
     }
     
     @objc private func togglePlayPause(_ sender: UIButton) {
