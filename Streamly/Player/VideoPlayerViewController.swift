@@ -53,7 +53,12 @@ final class VideoPlayerViewController: UIViewController {
     private func setupControls() {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Pause", for: .normal)
+        button.setImage(
+            autoplay
+                ? UIImage(systemName: "pause.fill")
+                : UIImage(systemName: "play.fill"),
+            for: .normal
+        )
         button.setTitleColor(.white, for: .normal)
         button.addTarget(self, action: #selector(togglePlayPause(_:)), for: .touchUpInside)
         view.addSubview(button)
@@ -70,10 +75,10 @@ final class VideoPlayerViewController: UIViewController {
         guard let p = player else { return }
         if p.timeControlStatus == .playing {
             p.pause()
-            sender.setTitle("Play", for: .normal)
+            sender.setImage(UIImage(systemName: "play.fill"), for: .normal)
         } else {
             p.play()
-            sender.setTitle("Pause", for: .normal)
+            sender.setImage(UIImage(systemName: "pause.fill"), for: .normal)
         }
     }
     
