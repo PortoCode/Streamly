@@ -78,3 +78,35 @@ final class VideoPlayerViewController: UIViewController {
         player = nil
     }
 }
+
+#if DEBUG
+import SwiftUI
+
+struct VideoPlayerViewController_Previews: PreviewProvider {
+    static var previews: some View {
+        let video = Video(
+            id: 1,
+            width: 1920,
+            height: 1080,
+            duration: 10,
+            image: URL(string: "https://www.w3schools.com/html/pic_trulli.jpg"),
+            user: VideoUser(id: 1, name: "Preview User"),
+            videoFiles: [
+                VideoFile(
+                    id: 1,
+                    quality: "1080p",
+                    fileType: "mp4",
+                    link: URL(string: "https://www.w3schools.com/html/mov_bbb.mp4")!
+                )
+            ],
+            isFavorite: false,
+            isDownloaded: false,
+            localFilePath: nil
+        )
+
+        return VideoPlayerContainer(video: video)
+            .edgesIgnoringSafeArea(.all)
+            .previewDisplayName("Video Player (via Container)")
+    }
+}
+#endif
