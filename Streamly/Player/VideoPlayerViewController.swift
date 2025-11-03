@@ -15,6 +15,7 @@ final class VideoPlayerViewController: UIViewController {
     private var timeObserver: Any?
     private var playPauseButton: UIButton?
     private var speedButton: UIButton?
+    private var timeLabel: UILabel?
     
     private let videoURL: URL
     private let autoplay: Bool
@@ -60,9 +61,20 @@ final class VideoPlayerViewController: UIViewController {
     private func setupControls() {
         let slider = UISlider()
         slider.translatesAutoresizingMaskIntoConstraints = false
+        slider.minimumTrackTintColor = .systemBlue
+        slider.maximumTrackTintColor = .darkGray
         slider.addTarget(self, action: #selector(sliderValueChanged(_:)), for: .valueChanged)
         view.addSubview(slider)
         self.progressSlider = slider
+        
+        let timeLabel = UILabel()
+        timeLabel.translatesAutoresizingMaskIntoConstraints = false
+        timeLabel.textColor = .white
+        timeLabel.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
+        timeLabel.text = "0:00 / 0:00"
+        timeLabel.textAlignment = .center
+        view.addSubview(timeLabel)
+        self.timeLabel = timeLabel
         
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -117,10 +129,13 @@ final class VideoPlayerViewController: UIViewController {
         NSLayoutConstraint.activate([
             slider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             slider.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            slider.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80),
+            slider.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
+            
+            timeLabel.topAnchor.constraint(equalTo: slider.bottomAnchor, constant: 8),
+            timeLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
             stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40),
+            stackView.topAnchor.constraint(equalTo: timeLabel.bottomAnchor, constant: 8),
             
             speedBtn.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             speedBtn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
@@ -149,6 +164,17 @@ final class VideoPlayerViewController: UIViewController {
         if !progressSlider!.isTracking {
             progressSlider?.value = Float(currentSeconds)
         }
+        
+        let currentTimeStr = formatTime(currentTime)
+        let durationStr = formatTime(duration)
+        timeLabel?.text = "\(currentTimeStr) / \(durationStr)"
+    }
+    
+    private func formatTime(_ time: CMTime) -> String {
+        let totalSeconds = Int(CMTimeGetSeconds(time))
+        let minutes = totalSeconds / 60
+        let seconds = totalSeconds % 60
+        return String(format: "%d:%02d", minutes, seconds)
     }
     
     private func createControlButton(imageName: String, target: Any?, action: Selector) -> UIButton {
