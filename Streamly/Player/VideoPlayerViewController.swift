@@ -13,6 +13,8 @@ final class VideoPlayerViewController: UIViewController {
     private var playerLayer: AVPlayerLayer?
     private var progressSlider: UISlider?
     private var timeObserver: Any?
+    private var playPauseButton: UIButton?
+    private var speedButton: UIButton?
     
     private let videoURL: URL
     private let autoplay: Bool
@@ -62,38 +64,66 @@ final class VideoPlayerViewController: UIViewController {
         view.addSubview(slider)
         self.progressSlider = slider
         
-        let playPauseButton = UIButton(type: .system)
-        playPauseButton.translatesAutoresizingMaskIntoConstraints = false
-        playPauseButton.setImage(
-            autoplay
-            ? UIImage(systemName: "pause.fill")
-            : UIImage(systemName: "play.fill"),
-            for: .normal
-        )
-        playPauseButton.setTitleColor(.white, for: .normal)
-        playPauseButton.addTarget(self, action: #selector(togglePlayPause(_:)), for: .touchUpInside)
-        view.addSubview(playPauseButton)
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .horizontal
+        stackView.spacing = 16
+        stackView.alignment = .center
+        stackView.distribution = .equalSpacing
+        view.addSubview(stackView)
         
-        let speedButton = UIButton(type: .system)
-        speedButton.translatesAutoresizingMaskIntoConstraints = false
-        speedButton.setTitle("1x", for: .normal)
-        speedButton.setTitleColor(.white, for: .normal)
-        speedButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
-        speedButton.addTarget(self, action: #selector(toggleSpeed(_:)), for: .touchUpInside)
-        view.addSubview(speedButton)
+        let backwardBtn = createControlButton(
+            imageName: "gobackward.10",
+            target: self,
+            action: #selector(skipBackward(_:))
+        )
+        
+        let playPauseBtn = createControlButton(
+            imageName: autoplay ? "pause.fill" : "play.fill",
+            target: self,
+            action: #selector(togglePlayPause(_:))
+        )
+        self.playPauseButton = playPauseBtn
+        
+        let forwardBtn = createControlButton(
+            imageName: "goforward.10",
+            target: self,
+            action: #selector(skipForward(_:))
+        )
+        
+        stackView.addArrangedSubview(backwardBtn)
+        stackView.addArrangedSubview(playPauseBtn)
+        stackView.addArrangedSubview(forwardBtn)
+        
+        let speedBtn = UIButton(type: .system)
+        speedBtn.translatesAutoresizingMaskIntoConstraints = false
+        var config = UIButton.Configuration.plain()
+        config.title = "1x"
+        config.baseForegroundColor = .white
+        config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
+            var outgoing = incoming
+            outgoing.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
+            return outgoing
+        }
+        config.contentInsets = NSDirectionalEdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8)
+        config.background.strokeColor = .white
+        config.background.strokeWidth = 1
+        config.background.cornerRadius = 6
+        speedBtn.configuration = config
+        speedBtn.addTarget(self, action: #selector(toggleSpeed(_:)), for: .touchUpInside)
+        view.addSubview(speedBtn)
+        self.speedButton = speedBtn
         
         NSLayoutConstraint.activate([
             slider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             slider.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             slider.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80),
             
-            playPauseButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            playPauseButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -36),
-            playPauseButton.widthAnchor.constraint(equalToConstant: 80),
-            playPauseButton.heightAnchor.constraint(equalToConstant: 44),
+            stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40),
             
-            speedButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            speedButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
+            speedBtn.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            speedBtn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
         ])
     }
     
@@ -115,7 +145,21 @@ final class VideoPlayerViewController: UIViewController {
         let currentSeconds = CMTimeGetSeconds(currentTime)
         
         progressSlider?.maximumValue = Float(durationSeconds)
-        progressSlider?.value = Float(currentSeconds)
+        
+        if !progressSlider!.isTracking {
+            progressSlider?.value = Float(currentSeconds)
+        }
+    }
+    
+    private func createControlButton(imageName: String, target: Any?, action: Selector) -> UIButton {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage(systemName: imageName), for: .normal)
+        button.tintColor = .white
+        button.addTarget(target, action: action, for: .touchUpInside)
+        button.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        button.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        return button
     }
     
     @objc private func sliderValueChanged(_ slider: UISlider) {
@@ -132,6 +176,24 @@ final class VideoPlayerViewController: UIViewController {
             p.play()
             sender.setImage(UIImage(systemName: "pause.fill"), for: .normal)
         }
+    }
+    
+    @objc private func skipBackward(_ sender: UIButton) {
+        guard let player = player else { return }
+        let newTime = CMTimeAdd(
+            player.currentTime(),
+            CMTime(seconds: -10, preferredTimescale: 600)
+        )
+        player.seek(to: newTime)
+    }
+
+    @objc private func skipForward(_ sender: UIButton) {
+        guard let player = player else { return }
+        let newTime = CMTimeAdd(
+            player.currentTime(),
+            CMTime(seconds: 10, preferredTimescale: 600)
+        )
+        player.seek(to: newTime)
     }
     
     @objc private func toggleSpeed(_ sender: UIButton) {
@@ -151,6 +213,9 @@ final class VideoPlayerViewController: UIViewController {
     }
     
     deinit {
+        if let observer = timeObserver {
+            player?.removeTimeObserver(observer)
+        }
         player?.pause()
         player = nil
     }
