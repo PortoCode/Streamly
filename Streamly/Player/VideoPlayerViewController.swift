@@ -62,17 +62,17 @@ final class VideoPlayerViewController: UIViewController {
         view.addSubview(slider)
         self.progressSlider = slider
         
-        let button = UIButton(type: .system)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setImage(
+        let playPauseButton = UIButton(type: .system)
+        playPauseButton.translatesAutoresizingMaskIntoConstraints = false
+        playPauseButton.setImage(
             autoplay
             ? UIImage(systemName: "pause.fill")
             : UIImage(systemName: "play.fill"),
             for: .normal
         )
-        button.setTitleColor(.white, for: .normal)
-        button.addTarget(self, action: #selector(togglePlayPause(_:)), for: .touchUpInside)
-        view.addSubview(button)
+        playPauseButton.setTitleColor(.white, for: .normal)
+        playPauseButton.addTarget(self, action: #selector(togglePlayPause(_:)), for: .touchUpInside)
+        view.addSubview(playPauseButton)
         
         let speedButton = UIButton(type: .system)
         speedButton.translatesAutoresizingMaskIntoConstraints = false
@@ -87,10 +87,10 @@ final class VideoPlayerViewController: UIViewController {
             slider.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             slider.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80),
             
-            button.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            button.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -36),
-            button.widthAnchor.constraint(equalToConstant: 80),
-            button.heightAnchor.constraint(equalToConstant: 44),
+            playPauseButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            playPauseButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -36),
+            playPauseButton.widthAnchor.constraint(equalToConstant: 80),
+            playPauseButton.heightAnchor.constraint(equalToConstant: 44),
             
             speedButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             speedButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
