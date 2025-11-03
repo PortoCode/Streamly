@@ -9,13 +9,14 @@ import UIKit
 import AVKit
 
 final class VideoPlayerViewController: UIViewController {
-    private let videoURL: URL
-    private let autoplay: Bool
-    
     private var player: AVPlayer?
     private var playerLayer: AVPlayerLayer?
     private var progressSlider: UISlider?
     private var timeObserver: Any?
+    
+    private let videoURL: URL
+    private let autoplay: Bool
+    private var currentSpeed: Float = 1.0
     
     init(url: URL, autoplay: Bool = false) {
         self.videoURL = url
@@ -73,6 +74,14 @@ final class VideoPlayerViewController: UIViewController {
         button.addTarget(self, action: #selector(togglePlayPause(_:)), for: .touchUpInside)
         view.addSubview(button)
         
+        let speedButton = UIButton(type: .system)
+        speedButton.translatesAutoresizingMaskIntoConstraints = false
+        speedButton.setTitle("1x", for: .normal)
+        speedButton.setTitleColor(.white, for: .normal)
+        speedButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
+        speedButton.addTarget(self, action: #selector(toggleSpeed(_:)), for: .touchUpInside)
+        view.addSubview(speedButton)
+        
         NSLayoutConstraint.activate([
             slider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             slider.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
@@ -81,7 +90,10 @@ final class VideoPlayerViewController: UIViewController {
             button.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             button.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -36),
             button.widthAnchor.constraint(equalToConstant: 80),
-            button.heightAnchor.constraint(equalToConstant: 44)
+            button.heightAnchor.constraint(equalToConstant: 44),
+            
+            speedButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            speedButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
         ])
     }
     
@@ -120,6 +132,22 @@ final class VideoPlayerViewController: UIViewController {
             p.play()
             sender.setImage(UIImage(systemName: "pause.fill"), for: .normal)
         }
+    }
+    
+    @objc private func toggleSpeed(_ sender: UIButton) {
+        switch currentSpeed {
+        case 1.0:
+            currentSpeed = 1.5
+            sender.setTitle("1.5x", for: .normal)
+        case 1.5:
+            currentSpeed = 2.0
+            sender.setTitle("2x", for: .normal)
+        default:
+            currentSpeed = 1.0
+            sender.setTitle("1x", for: .normal)
+        }
+        
+        player?.rate = currentSpeed
     }
     
     deinit {
