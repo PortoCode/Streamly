@@ -19,6 +19,7 @@ final class VideoPlayerViewController: UIViewController {
     
     private let videoURL: URL
     private let autoplay: Bool
+    private let defaultTimescale: CMTimeScale = 600
     private var currentSpeed: Float = 1.0
     
     init(url: URL, autoplay: Bool = false) {
@@ -189,7 +190,7 @@ final class VideoPlayerViewController: UIViewController {
     }
     
     @objc private func sliderValueChanged(_ slider: UISlider) {
-        let newTime = CMTime(seconds: Double(slider.value), preferredTimescale: 600)
+        let newTime = CMTime(seconds: Double(slider.value), preferredTimescale: defaultTimescale)
         player?.seek(to: newTime)
     }
     
@@ -208,7 +209,7 @@ final class VideoPlayerViewController: UIViewController {
         guard let player = player else { return }
         let newTime = CMTimeAdd(
             player.currentTime(),
-            CMTime(seconds: -10, preferredTimescale: 600)
+            CMTime(seconds: -10, preferredTimescale: defaultTimescale)
         )
         player.seek(to: newTime)
     }
@@ -217,7 +218,7 @@ final class VideoPlayerViewController: UIViewController {
         guard let player = player else { return }
         let newTime = CMTimeAdd(
             player.currentTime(),
-            CMTime(seconds: 10, preferredTimescale: 600)
+            CMTime(seconds: 10, preferredTimescale: defaultTimescale)
         )
         player.seek(to: newTime)
     }
