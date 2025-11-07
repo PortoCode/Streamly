@@ -166,9 +166,7 @@ final class VideoPlayerViewController: UIViewController {
             progressSlider?.value = Float(currentSeconds)
         }
         
-        let currentTimeStr = formatTime(currentTime)
-        let durationStr = formatTime(duration)
-        timeLabel?.text = "\(currentTimeStr) / \(durationStr)"
+        timeLabel?.text = "\(formatTime(currentTime)) / \(formatTime(duration))"
     }
     
     private func formatTime(_ time: CMTime) -> String {
