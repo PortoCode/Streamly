@@ -21,6 +21,7 @@ final class VideoPlayerViewController: UIViewController {
     private let autoplay: Bool
     private let defaultTimescale: CMTimeScale = 600
     private var currentSpeed: Float = 1.0
+    private let progressUpdateInterval = CMTime(seconds: 0.1, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
     
     init(url: URL, autoplay: Bool = false) {
         self.videoURL = url
@@ -144,9 +145,8 @@ final class VideoPlayerViewController: UIViewController {
     }
     
     private func setupProgressObserver() {
-        let interval = CMTime(seconds: 0.1, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
         timeObserver = player?.addPeriodicTimeObserver(
-            forInterval: interval,
+            forInterval: progressUpdateInterval,
             queue: .main
         ) { [weak self] time in
             self?.updateProgress(time)
