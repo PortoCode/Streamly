@@ -23,6 +23,12 @@ final class VideoPlayerViewController: UIViewController {
     private var currentSpeed: Float = 1.0
     private let progressUpdateInterval = CMTime(seconds: 0.1, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
     
+    private enum PlaybackSpeed: Float {
+        case normal = 1.0
+        case oneAndHalf = 1.5
+        case double = 2.0
+    }
+    
     init(url: URL, autoplay: Bool = false) {
         self.videoURL = url
         self.autoplay = autoplay
@@ -223,14 +229,14 @@ final class VideoPlayerViewController: UIViewController {
     
     @objc private func toggleSpeed(_ sender: UIButton) {
         switch currentSpeed {
-        case 1.0:
-            currentSpeed = 1.5
+        case PlaybackSpeed.normal.rawValue:
+            currentSpeed = PlaybackSpeed.oneAndHalf.rawValue
             sender.setTitle("1.5x", for: .normal)
-        case 1.5:
-            currentSpeed = 2.0
+        case PlaybackSpeed.oneAndHalf.rawValue:
+            currentSpeed = PlaybackSpeed.double.rawValue
             sender.setTitle("2x", for: .normal)
         default:
-            currentSpeed = 1.0
+            currentSpeed = PlaybackSpeed.normal.rawValue
             sender.setTitle("1x", for: .normal)
         }
         
