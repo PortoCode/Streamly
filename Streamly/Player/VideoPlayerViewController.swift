@@ -16,6 +16,7 @@ final class VideoPlayerViewController: UIViewController {
     private var playPauseButton: UIButton?
     private var speedButton: UIButton?
     private var timeLabel: UILabel?
+    private var muteButton: UIButton?
     
     private let videoURL: URL
     private let autoplay: Bool
@@ -134,6 +135,14 @@ final class VideoPlayerViewController: UIViewController {
         view.addSubview(speedBtn)
         self.speedButton = speedBtn
         
+        let muteBtn = UIButton(type: .system)
+        muteBtn.translatesAutoresizingMaskIntoConstraints = false
+        muteBtn.setImage(UIImage(systemName: "speaker.fill"), for: .normal)
+        muteBtn.tintColor = .white
+        muteBtn.addTarget(self, action: #selector(toggleMute(_:)), for: .touchUpInside)
+        view.addSubview(muteBtn)
+        self.muteButton = muteBtn
+        
         NSLayoutConstraint.activate([
             slider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             slider.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
@@ -146,7 +155,10 @@ final class VideoPlayerViewController: UIViewController {
             stackView.topAnchor.constraint(equalTo: timeLabel.bottomAnchor, constant: 8),
             
             speedBtn.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            speedBtn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
+            speedBtn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            
+            muteBtn.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            muteBtn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
         ])
     }
     
@@ -217,7 +229,7 @@ final class VideoPlayerViewController: UIViewController {
         )
         player.seek(to: newTime)
     }
-
+    
     @objc private func skipForward(_ sender: UIButton) {
         guard let player = player else { return }
         let newTime = CMTimeAdd(
@@ -241,6 +253,13 @@ final class VideoPlayerViewController: UIViewController {
         }
         
         player?.rate = currentSpeed
+    }
+    
+    @objc private func toggleMute(_ sender: UIButton) {
+        guard let player = player else { return }
+        let isMuted = player.volume == 0
+        player.volume = isMuted ? 1.0 : 0
+        sender.setImage(UIImage(systemName: isMuted ? "speaker.fill" : "speaker.slash.fill"), for: .normal)
     }
     
     deinit {
