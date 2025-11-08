@@ -85,13 +85,20 @@ final class VideoPlayerViewController: UIViewController {
         view.addSubview(timeLabel)
         self.timeLabel = timeLabel
         
+        let backgroundView = UIView()
+        backgroundView.translatesAutoresizingMaskIntoConstraints = false
+        backgroundView.backgroundColor = UIColor(white: 0.0, alpha: 0.5)
+        backgroundView.layer.cornerRadius = 10
+        backgroundView.layer.masksToBounds = true
+        view.addSubview(backgroundView)
+        
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .horizontal
         stackView.spacing = 16
         stackView.alignment = .center
         stackView.distribution = .equalSpacing
-        view.addSubview(stackView)
+        backgroundView.addSubview(stackView)
         
         let backwardBtn = createControlButton(
             imageName: "gobackward.10",
@@ -151,8 +158,13 @@ final class VideoPlayerViewController: UIViewController {
             timeLabel.topAnchor.constraint(equalTo: slider.bottomAnchor, constant: 8),
             timeLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            stackView.topAnchor.constraint(equalTo: timeLabel.bottomAnchor, constant: 8),
+            backgroundView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            backgroundView.topAnchor.constraint(equalTo: timeLabel.bottomAnchor, constant: 16),
+            backgroundView.widthAnchor.constraint(equalToConstant: 250),
+            backgroundView.heightAnchor.constraint(equalToConstant: 60),
+            
+            stackView.centerXAnchor.constraint(equalTo: backgroundView.centerXAnchor),
+            stackView.centerYAnchor.constraint(equalTo: backgroundView.centerYAnchor),
             
             speedBtn.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             speedBtn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
