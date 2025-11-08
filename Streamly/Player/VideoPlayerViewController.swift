@@ -42,7 +42,7 @@ final class VideoPlayerViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .black
+        view.backgroundColor = .white
         setupPlayer()
         setupControls()
         setupProgressObserver()
@@ -127,14 +127,14 @@ final class VideoPlayerViewController: UIViewController {
         speedBtn.translatesAutoresizingMaskIntoConstraints = false
         var config = UIButton.Configuration.plain()
         config.title = "1x"
-        config.baseForegroundColor = .white
+        config.baseForegroundColor = .systemBlue
         config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
             var outgoing = incoming
             outgoing.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
             return outgoing
         }
         config.contentInsets = NSDirectionalEdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8)
-        config.background.strokeColor = .white
+        config.background.strokeColor = .systemBlue
         config.background.strokeWidth = 1
         config.background.cornerRadius = 6
         speedBtn.configuration = config
@@ -145,7 +145,7 @@ final class VideoPlayerViewController: UIViewController {
         let muteBtn = UIButton(type: .system)
         muteBtn.translatesAutoresizingMaskIntoConstraints = false
         muteBtn.setImage(UIImage(systemName: "speaker.fill"), for: .normal)
-        muteBtn.tintColor = .white
+        muteBtn.tintColor = .systemBlue
         muteBtn.addTarget(self, action: #selector(toggleMute(_:)), for: .touchUpInside)
         view.addSubview(muteBtn)
         self.muteButton = muteBtn
