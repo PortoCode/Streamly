@@ -8,7 +8,22 @@
 
 /* Begin PBXBuildFile section */
 		6D03A4D32EA5AEBE00F309C7 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 6D03A4D22EA5AEBE00F309C7 /* RealmSwift */; };
+		6D35C5EA2EC41B8200CD97EC /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 6D03A4D22EA5AEBE00F309C7 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		6D35C5EB2EC41B8200CD97EC /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				6D35C5EA2EC41B8200CD97EC /* RealmSwift in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		6D03A4232EA3382100F309C7 /* Streamly.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Streamly.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -60,6 +75,7 @@
 				6D03A41F2EA3382100F309C7 /* Sources */,
 				6D03A4202EA3382100F309C7 /* Frameworks */,
 				6D03A4212EA3382100F309C7 /* Resources */,
+				6D35C5EB2EC41B8200CD97EC /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -256,6 +272,7 @@
 		6D03A4322EA3382300F309C7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
@@ -264,6 +281,7 @@
 				DEVELOPMENT_TEAM = 4VK5P5723H;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -285,6 +303,7 @@
 		6D03A4332EA3382300F309C7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
@@ -293,6 +312,7 @@
 				DEVELOPMENT_TEAM = 4VK5P5723H;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
