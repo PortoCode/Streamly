@@ -46,6 +46,7 @@ final class VideoPlayerViewController: UIViewController {
         setupPlayer()
         setupControls()
         setupProgressObserver()
+        setupGestures()
     }
     
     override func viewDidLayoutSubviews() {
@@ -199,6 +200,16 @@ final class VideoPlayerViewController: UIViewController {
         timeLabel?.text = "\(formatTime(currentTime)) / \(formatTime(duration))"
     }
     
+    private func setupGestures() {
+        let leftSwipe = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
+        leftSwipe.direction = .left
+        view.addGestureRecognizer(leftSwipe)
+        
+        let rightSwipe = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
+        rightSwipe.direction = .right
+        view.addGestureRecognizer(rightSwipe)
+    }
+    
     private func formatTime(_ time: CMTime) -> String {
         let totalSeconds = Int(CMTimeGetSeconds(time))
         let minutes = totalSeconds / 60
@@ -272,6 +283,24 @@ final class VideoPlayerViewController: UIViewController {
         let isMuted = player.volume == 0
         player.volume = isMuted ? 1.0 : 0
         sender.setImage(UIImage(systemName: isMuted ? "speaker.fill" : "speaker.slash.fill"), for: .normal)
+    }
+    
+    @objc private func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
+        guard let player = player else { return }
+        
+        if gesture.direction == .left {
+            let newTime = CMTimeAdd(
+                player.currentTime(),
+                CMTime(seconds: 30, preferredTimescale: defaultTimescale)
+            )
+            player.seek(to: newTime)
+        } else if gesture.direction == .right {
+            let newTime = CMTimeAdd(
+                player.currentTime(),
+                CMTime(seconds: -30, preferredTimescale: defaultTimescale)
+            )
+            player.seek(to: newTime)
+        }
     }
     
     deinit {
