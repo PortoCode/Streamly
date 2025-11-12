@@ -18,6 +18,10 @@ final class VideoPlayerViewController: UIViewController {
     private var timeLabel: UILabel?
     private var muteButton: UIButton?
     
+    private var controlsVisible = true
+    private var controlsHideTimer: Timer?
+    private var controlElements: [UIView] = []
+    
     private let videoURL: URL
     private let autoplay: Bool
     private let defaultTimescale: CMTimeScale = 600
@@ -76,6 +80,7 @@ final class VideoPlayerViewController: UIViewController {
         slider.addTarget(self, action: #selector(sliderValueChanged(_:)), for: .valueChanged)
         view.addSubview(slider)
         self.progressSlider = slider
+        controlElements.append(slider)
         
         let timeLabel = UILabel()
         timeLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -85,6 +90,7 @@ final class VideoPlayerViewController: UIViewController {
         timeLabel.textAlignment = .center
         view.addSubview(timeLabel)
         self.timeLabel = timeLabel
+        controlElements.append(timeLabel)
         
         let backgroundView = UIView()
         backgroundView.translatesAutoresizingMaskIntoConstraints = false
@@ -92,6 +98,7 @@ final class VideoPlayerViewController: UIViewController {
         backgroundView.layer.cornerRadius = 10
         backgroundView.layer.masksToBounds = true
         view.addSubview(backgroundView)
+        controlElements.append(backgroundView)
         
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -142,6 +149,7 @@ final class VideoPlayerViewController: UIViewController {
         speedBtn.addTarget(self, action: #selector(toggleSpeed(_:)), for: .touchUpInside)
         view.addSubview(speedBtn)
         self.speedButton = speedBtn
+        controlElements.append(speedBtn)
         
         let muteBtn = UIButton(type: .system)
         muteBtn.translatesAutoresizingMaskIntoConstraints = false
@@ -150,6 +158,7 @@ final class VideoPlayerViewController: UIViewController {
         muteBtn.addTarget(self, action: #selector(toggleMute(_:)), for: .touchUpInside)
         view.addSubview(muteBtn)
         self.muteButton = muteBtn
+        controlElements.append(muteBtn)
         
         NSLayoutConstraint.activate([
             slider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -208,6 +217,35 @@ final class VideoPlayerViewController: UIViewController {
         let rightSwipe = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
         rightSwipe.direction = .right
         view.addGestureRecognizer(rightSwipe)
+    }
+    
+    private func setControlsVisible(_ visible: Bool, animated: Bool = true) {
+        controlsVisible = visible
+        
+        controlsHideTimer?.invalidate()
+        
+        let duration = animated ? 0.3 : 0
+        UIView.animate(withDuration: duration) {
+            self.controlElements.forEach { $0.alpha = visible ? 1.0 : 0.0 }
+        }
+        
+        if visible {
+            controlsHideTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false) { [weak self] _ in
+                if self?.player?.timeControlStatus == .playing {
+                    self?.setControlsVisible(false, animated: true)
+                }
+            }
+        }
+    }
+    
+    private func resetControlsHideTimer() {
+        controlsHideTimer?.invalidate()
+        
+        if controlsVisible && player?.timeControlStatus == .playing {
+            controlsHideTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false) { [weak self] _ in
+                self?.setControlsVisible(false, animated: true)
+            }
+        }
     }
     
     private func formatTime(_ time: CMTime) -> String {
