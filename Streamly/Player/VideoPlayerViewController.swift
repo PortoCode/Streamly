@@ -210,6 +210,9 @@ final class VideoPlayerViewController: UIViewController {
     }
     
     private func setupGestures() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        view.addGestureRecognizer(tapGesture)
+        
         let leftSwipe = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
         leftSwipe.direction = .left
         view.addGestureRecognizer(leftSwipe)
@@ -323,8 +326,16 @@ final class VideoPlayerViewController: UIViewController {
         sender.setImage(UIImage(systemName: isMuted ? "speaker.fill" : "speaker.slash.fill"), for: .normal)
     }
     
+    @objc private func handleTap(_ gesture: UITapGestureRecognizer) {
+        setControlsVisible(!controlsVisible, animated: true)
+    }
+    
     @objc private func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
         guard let player = player else { return }
+        
+        if !controlsVisible {
+            setControlsVisible(true, animated: true)
+        }
         
         if gesture.direction == .left {
             let newTime = CMTimeAdd(
@@ -339,6 +350,8 @@ final class VideoPlayerViewController: UIViewController {
             )
             player.seek(to: newTime)
         }
+        
+        resetControlsHideTimer()
     }
     
     deinit {
