@@ -270,15 +270,18 @@ final class VideoPlayerViewController: UIViewController {
     }
     
     @objc private func sliderValueChanged(_ slider: UISlider) {
+        resetControlsHideTimer()
         let newTime = CMTime(seconds: Double(slider.value), preferredTimescale: defaultTimescale)
         player?.seek(to: newTime)
     }
     
     @objc private func togglePlayPause(_ sender: UIButton) {
+        resetControlsHideTimer()
         guard let p = player else { return }
         if p.timeControlStatus == .playing {
             p.pause()
             sender.setImage(UIImage(systemName: "play.fill"), for: .normal)
+            setControlsVisible(true, animated: false)
         } else {
             p.play()
             sender.setImage(UIImage(systemName: "pause.fill"), for: .normal)
@@ -286,6 +289,7 @@ final class VideoPlayerViewController: UIViewController {
     }
     
     @objc private func skipBackward(_ sender: UIButton) {
+        resetControlsHideTimer()
         guard let player = player else { return }
         let newTime = CMTimeAdd(
             player.currentTime(),
@@ -295,6 +299,7 @@ final class VideoPlayerViewController: UIViewController {
     }
     
     @objc private func skipForward(_ sender: UIButton) {
+        resetControlsHideTimer()
         guard let player = player else { return }
         let newTime = CMTimeAdd(
             player.currentTime(),
@@ -304,6 +309,8 @@ final class VideoPlayerViewController: UIViewController {
     }
     
     @objc private func toggleSpeed(_ sender: UIButton) {
+        resetControlsHideTimer()
+        
         switch currentSpeed {
         case PlaybackSpeed.normal.rawValue:
             currentSpeed = PlaybackSpeed.oneAndHalf.rawValue
@@ -320,6 +327,7 @@ final class VideoPlayerViewController: UIViewController {
     }
     
     @objc private func toggleMute(_ sender: UIButton) {
+        resetControlsHideTimer()
         guard let player = player else { return }
         let isMuted = player.volume == 0
         player.volume = isMuted ? 1.0 : 0
@@ -355,6 +363,7 @@ final class VideoPlayerViewController: UIViewController {
     }
     
     deinit {
+        controlsHideTimer?.invalidate()
         if let observer = timeObserver {
             player?.removeTimeObserver(observer)
         }
