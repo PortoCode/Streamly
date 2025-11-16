@@ -210,8 +210,14 @@ final class VideoPlayerViewController: UIViewController {
     }
     
     private func setupGestures() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        view.addGestureRecognizer(tapGesture)
+        let doubleTap = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(_:)))
+        doubleTap.numberOfTapsRequired = 2
+        view.addGestureRecognizer(doubleTap)
+        
+        let singleTap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        singleTap.numberOfTapsRequired = 1
+        singleTap.require(toFail: doubleTap)
+        view.addGestureRecognizer(singleTap)
         
         let leftSwipe = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
         leftSwipe.direction = .left
@@ -332,6 +338,11 @@ final class VideoPlayerViewController: UIViewController {
         let isMuted = player.volume == 0
         player.volume = isMuted ? 1.0 : 0
         sender.setImage(UIImage(systemName: isMuted ? "speaker.fill" : "speaker.slash.fill"), for: .normal)
+    }
+    
+    @objc private func handleDoubleTap(_ gesture: UITapGestureRecognizer) {
+        guard let button = playPauseButton else { return }
+        togglePlayPause(button)
     }
     
     @objc private func handleTap(_ gesture: UITapGestureRecognizer) {
