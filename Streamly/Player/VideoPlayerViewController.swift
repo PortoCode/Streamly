@@ -192,14 +192,14 @@ final class VideoPlayerViewController: UIViewController {
             stackView.centerXAnchor.constraint(equalTo: backgroundView.centerXAnchor),
             stackView.centerYAnchor.constraint(equalTo: backgroundView.centerYAnchor),
             
-            speedBtn.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            speedBtn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
-            
             muteBtn.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             muteBtn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             
-            fullscreenBtn.trailingAnchor.constraint(equalTo: speedBtn.leadingAnchor, constant: -12),
-            fullscreenBtn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
+            fullscreenBtn.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            fullscreenBtn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            
+            speedBtn.trailingAnchor.constraint(equalTo: fullscreenBtn.leadingAnchor, constant: -12),
+            speedBtn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
         ])
     }
     
