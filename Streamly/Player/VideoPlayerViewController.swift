@@ -17,7 +17,9 @@ final class VideoPlayerViewController: UIViewController {
     private var speedButton: UIButton?
     private var timeLabel: UILabel?
     private var muteButton: UIButton?
+    private var fullscreenButton: UIButton?
     
+    private var isFullscreen = false
     private var controlsVisible = true
     private var controlsHideTimer: Timer?
     private var controlElements: [UIView] = []
@@ -56,6 +58,11 @@ final class VideoPlayerViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         playerLayer?.frame = view.bounds
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        playerLayer?.frame = CGRect(origin: .zero, size: size)
     }
     
     private func setupPlayer() {
@@ -160,6 +167,15 @@ final class VideoPlayerViewController: UIViewController {
         self.muteButton = muteBtn
         controlElements.append(muteBtn)
         
+        let fullscreenBtn = UIButton(type: .system)
+        fullscreenBtn.translatesAutoresizingMaskIntoConstraints = false
+        fullscreenBtn.setImage(UIImage(systemName: "arrow.right.circle.fill"), for: .normal)
+        fullscreenBtn.tintColor = .systemBlue
+        fullscreenBtn.addTarget(self, action: #selector(toggleFullscreen(_:)), for: .touchUpInside)
+        view.addSubview(fullscreenBtn)
+        self.fullscreenButton = fullscreenBtn
+        controlElements.append(fullscreenBtn)
+        
         NSLayoutConstraint.activate([
             slider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             slider.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
@@ -180,7 +196,10 @@ final class VideoPlayerViewController: UIViewController {
             speedBtn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             
             muteBtn.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            muteBtn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
+            muteBtn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            
+            fullscreenBtn.trailingAnchor.constraint(equalTo: speedBtn.leadingAnchor, constant: -12),
+            fullscreenBtn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
         ])
     }
     
@@ -371,6 +390,34 @@ final class VideoPlayerViewController: UIViewController {
         }
         
         resetControlsHideTimer()
+    }
+    
+    @objc private func toggleFullscreen(_ sender: UIButton) {
+        isFullscreen = !isFullscreen
+        
+        if isFullscreen {
+            AppDelegate.orientationLock = .landscapeRight
+            let orientation = UIInterfaceOrientation.landscapeRight.rawValue
+            UIDevice.current.setValue(orientation, forKey: "orientation")
+            
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let rootViewController = windowScene.windows.first?.rootViewController {
+                rootViewController.setNeedsUpdateOfSupportedInterfaceOrientations()
+            }
+            
+            sender.setImage(UIImage(systemName: "arrow.left.circle.fill"), for: .normal)
+        } else {
+            AppDelegate.orientationLock = .portrait
+            let orientation = UIInterfaceOrientation.portrait.rawValue
+            UIDevice.current.setValue(orientation, forKey: "orientation")
+            
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let rootViewController = windowScene.windows.first?.rootViewController {
+                rootViewController.setNeedsUpdateOfSupportedInterfaceOrientations()
+            }
+            
+            sender.setImage(UIImage(systemName: "arrow.right.circle.fill"), for: .normal)
+        }
     }
     
     deinit {
