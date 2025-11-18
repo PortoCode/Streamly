@@ -169,7 +169,7 @@ final class VideoPlayerViewController: UIViewController {
         
         let fullscreenBtn = UIButton(type: .system)
         fullscreenBtn.translatesAutoresizingMaskIntoConstraints = false
-        fullscreenBtn.setImage(UIImage(systemName: "arrow.right.circle.fill"), for: .normal)
+        fullscreenBtn.setImage(UIImage(systemName: "arrow.up.left.and.arrow.down.right"), for: .normal)
         fullscreenBtn.tintColor = .systemBlue
         fullscreenBtn.addTarget(self, action: #selector(toggleFullscreen(_:)), for: .touchUpInside)
         view.addSubview(fullscreenBtn)
@@ -405,7 +405,7 @@ final class VideoPlayerViewController: UIViewController {
                 rootViewController.setNeedsUpdateOfSupportedInterfaceOrientations()
             }
             
-            sender.setImage(UIImage(systemName: "arrow.left.circle.fill"), for: .normal)
+            sender.setImage(UIImage(systemName: "arrow.down.right.and.arrow.up.left"), for: .normal)
         } else {
             AppDelegate.orientationLock = .portrait
             let orientation = UIInterfaceOrientation.portrait.rawValue
@@ -416,7 +416,7 @@ final class VideoPlayerViewController: UIViewController {
                 rootViewController.setNeedsUpdateOfSupportedInterfaceOrientations()
             }
             
-            sender.setImage(UIImage(systemName: "arrow.right.circle.fill"), for: .normal)
+            sender.setImage(UIImage(systemName: "arrow.up.left.and.arrow.down.right"), for: .normal)
         }
     }
     
