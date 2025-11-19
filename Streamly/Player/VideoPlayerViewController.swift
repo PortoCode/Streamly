@@ -65,6 +65,10 @@ final class VideoPlayerViewController: UIViewController {
         playerLayer?.frame = CGRect(origin: .zero, size: size)
     }
     
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return AppDelegate.orientationLock
+    }
+    
     private func setupPlayer() {
         let asset = AVURLAsset(url: videoURL)
         let item = AVPlayerItem(asset: asset)
@@ -393,31 +397,36 @@ final class VideoPlayerViewController: UIViewController {
     }
     
     @objc private func toggleFullscreen(_ sender: UIButton) {
-        isFullscreen = !isFullscreen
+        isFullscreen.toggle()
         
-        if isFullscreen {
-            AppDelegate.orientationLock = .landscapeRight
-            let orientation = UIInterfaceOrientation.landscapeRight.rawValue
-            UIDevice.current.setValue(orientation, forKey: "orientation")
+        AppDelegate.orientationLock = isFullscreen ? .landscapeRight : .portrait
+        
+        setNeedsUpdateOfSupportedInterfaceOrientations()
+        
+        if #available(iOS 16.0, *) {
+            guard let windowScene = view.window?.windowScene else { return }
             
-            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-               let rootViewController = windowScene.windows.first?.rootViewController {
-                rootViewController.setNeedsUpdateOfSupportedInterfaceOrientations()
+            let mask: UIInterfaceOrientationMask = isFullscreen ? .landscapeRight : .portrait
+            let preferences = UIWindowScene.GeometryPreferences.iOS(interfaceOrientations: mask)
+            
+            DispatchQueue.main.async {
+                windowScene.requestGeometryUpdate(preferences) { error in
+                    print("Error updating geometry: \(error.localizedDescription)")
+                }
             }
-            
-            sender.setImage(UIImage(systemName: "arrow.down.right.and.arrow.up.left"), for: .normal)
         } else {
-            AppDelegate.orientationLock = .portrait
-            let orientation = UIInterfaceOrientation.portrait.rawValue
+            let orientation = isFullscreen
+            ? UIInterfaceOrientation.landscapeRight.rawValue
+            : UIInterfaceOrientation.portrait.rawValue
+            
             UIDevice.current.setValue(orientation, forKey: "orientation")
-            
-            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-               let rootViewController = windowScene.windows.first?.rootViewController {
-                rootViewController.setNeedsUpdateOfSupportedInterfaceOrientations()
-            }
-            
-            sender.setImage(UIImage(systemName: "arrow.up.left.and.arrow.down.right"), for: .normal)
         }
+        
+        let imageName = isFullscreen
+        ? "arrow.down.right.and.arrow.up.left"
+        : "arrow.up.left.and.arrow.down.right"
+        
+        sender.setImage(UIImage(systemName: imageName), for: .normal)
     }
     
     deinit {
