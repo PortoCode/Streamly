@@ -84,102 +84,141 @@ final class VideoPlayerViewController: UIViewController {
     }
     
     private func setupControls() {
+        setupProgressSlider()
+        setupTimeLabel()
+        
+        let backgroundView = setupControlsBackground()
+        let controlsStack = setupPlaybackButtons(in: backgroundView)
+        
+        setupSpeedButton()
+        setupMuteButton()
+        setupFullscreenButton()
+        
+        activateControlsConstraints(
+            slider: progressSlider!,
+            timeLabel: timeLabel!,
+            backgroundView: backgroundView,
+            stackView: controlsStack
+        )
+    }
+    
+    private func setupProgressSlider() {
         let slider = UISlider()
         slider.translatesAutoresizingMaskIntoConstraints = false
         slider.minimumTrackTintColor = .systemBlue
         slider.maximumTrackTintColor = .darkGray
         slider.addTarget(self, action: #selector(sliderValueChanged(_:)), for: .valueChanged)
+        
         view.addSubview(slider)
-        self.progressSlider = slider
+        progressSlider = slider
         controlElements.append(slider)
+    }
+    
+    private func setupTimeLabel() {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .white
+        label.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
+        label.textAlignment = .center
+        label.text = "0:00 / 0:00"
         
-        let timeLabel = UILabel()
-        timeLabel.translatesAutoresizingMaskIntoConstraints = false
-        timeLabel.textColor = .white
-        timeLabel.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
-        timeLabel.text = "0:00 / 0:00"
-        timeLabel.textAlignment = .center
-        view.addSubview(timeLabel)
-        self.timeLabel = timeLabel
-        controlElements.append(timeLabel)
+        view.addSubview(label)
+        timeLabel = label
+        controlElements.append(label)
+    }
+    
+    private func setupControlsBackground() -> UIView {
+        let bg = UIView()
+        bg.translatesAutoresizingMaskIntoConstraints = false
+        bg.backgroundColor = UIColor(white: 0, alpha: 0.5)
+        bg.layer.cornerRadius = 10
+        bg.layer.masksToBounds = true
         
-        let backgroundView = UIView()
-        backgroundView.translatesAutoresizingMaskIntoConstraints = false
-        backgroundView.backgroundColor = UIColor(white: 0.0, alpha: 0.5)
-        backgroundView.layer.cornerRadius = 10
-        backgroundView.layer.masksToBounds = true
-        view.addSubview(backgroundView)
-        controlElements.append(backgroundView)
+        view.addSubview(bg)
+        controlElements.append(bg)
         
-        let stackView = UIStackView()
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.axis = .horizontal
-        stackView.spacing = 16
-        stackView.alignment = .center
-        stackView.distribution = .equalSpacing
-        backgroundView.addSubview(stackView)
+        return bg
+    }
+    
+    private func setupPlaybackButtons(in backgroundView: UIView) -> UIStackView {
+        let stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .horizontal
+        stack.spacing = 16
+        stack.alignment = .center
+        stack.distribution = .equalSpacing
         
-        let backwardBtn = createControlButton(
-            imageName: "gobackward.10",
-            target: self,
-            action: #selector(skipBackward(_:))
-        )
+        let back = createControlButton(imageName: "gobackward.10",
+                                       target: self,
+                                       action: #selector(skipBackward(_:)))
         
-        let playPauseBtn = createControlButton(
-            imageName: autoplay ? "pause.fill" : "play.fill",
-            target: self,
-            action: #selector(togglePlayPause(_:))
-        )
-        self.playPauseButton = playPauseBtn
+        let playPause = createControlButton(imageName: autoplay ? "pause.fill" : "play.fill",
+                                            target: self,
+                                            action: #selector(togglePlayPause(_:)))
+        self.playPauseButton = playPause
         
-        let forwardBtn = createControlButton(
-            imageName: "goforward.10",
-            target: self,
-            action: #selector(skipForward(_:))
-        )
+        let forward = createControlButton(imageName: "goforward.10",
+                                          target: self,
+                                          action: #selector(skipForward(_:)))
         
-        stackView.addArrangedSubview(backwardBtn)
-        stackView.addArrangedSubview(playPauseBtn)
-        stackView.addArrangedSubview(forwardBtn)
+        stack.addArrangedSubview(back)
+        stack.addArrangedSubview(playPause)
+        stack.addArrangedSubview(forward)
         
-        let speedBtn = UIButton(type: .system)
-        speedBtn.translatesAutoresizingMaskIntoConstraints = false
+        backgroundView.addSubview(stack)
+        return stack
+    }
+    
+    private func setupSpeedButton() {
+        let btn = UIButton(type: .system)
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        
         var config = UIButton.Configuration.plain()
         config.title = "1x"
         config.baseForegroundColor = .systemBlue
         config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
-            var outgoing = incoming
-            outgoing.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
-            return outgoing
+            var out = incoming
+            out.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
+            return out
         }
         config.contentInsets = NSDirectionalEdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8)
         config.background.strokeColor = .systemBlue
         config.background.strokeWidth = 1
         config.background.cornerRadius = 6
-        speedBtn.configuration = config
-        speedBtn.addTarget(self, action: #selector(toggleSpeed(_:)), for: .touchUpInside)
-        view.addSubview(speedBtn)
-        self.speedButton = speedBtn
-        controlElements.append(speedBtn)
         
-        let muteBtn = UIButton(type: .system)
-        muteBtn.translatesAutoresizingMaskIntoConstraints = false
-        muteBtn.setImage(UIImage(systemName: "speaker.fill"), for: .normal)
-        muteBtn.tintColor = .systemBlue
-        muteBtn.addTarget(self, action: #selector(toggleMute(_:)), for: .touchUpInside)
-        view.addSubview(muteBtn)
-        self.muteButton = muteBtn
-        controlElements.append(muteBtn)
+        btn.configuration = config
+        btn.addTarget(self, action: #selector(toggleSpeed(_:)), for: .touchUpInside)
         
-        let fullscreenBtn = UIButton(type: .system)
-        fullscreenBtn.translatesAutoresizingMaskIntoConstraints = false
-        fullscreenBtn.setImage(UIImage(systemName: "arrow.up.left.and.arrow.down.right"), for: .normal)
-        fullscreenBtn.tintColor = .systemBlue
-        fullscreenBtn.addTarget(self, action: #selector(toggleFullscreen(_:)), for: .touchUpInside)
-        view.addSubview(fullscreenBtn)
-        self.fullscreenButton = fullscreenBtn
-        controlElements.append(fullscreenBtn)
+        view.addSubview(btn)
+        speedButton = btn
+        controlElements.append(btn)
+    }
+    
+    private func setupMuteButton() {
+        let btn = UIButton(type: .system)
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        btn.setImage(UIImage(systemName: "speaker.fill"), for: .normal)
+        btn.tintColor = .systemBlue
+        btn.addTarget(self, action: #selector(toggleMute(_:)), for: .touchUpInside)
         
+        view.addSubview(btn)
+        muteButton = btn
+        controlElements.append(btn)
+    }
+    
+    private func setupFullscreenButton() {
+        let btn = UIButton(type: .system)
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        btn.setImage(UIImage(systemName: "arrow.up.left.and.arrow.down.right"), for: .normal)
+        btn.tintColor = .systemBlue
+        btn.addTarget(self, action: #selector(toggleFullscreen(_:)), for: .touchUpInside)
+        
+        view.addSubview(btn)
+        fullscreenButton = btn
+        controlElements.append(btn)
+    }
+    
+    private func activateControlsConstraints(slider: UISlider, timeLabel: UILabel, backgroundView: UIView, stackView: UIStackView) {
         NSLayoutConstraint.activate([
             slider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             slider.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
@@ -196,14 +235,14 @@ final class VideoPlayerViewController: UIViewController {
             stackView.centerXAnchor.constraint(equalTo: backgroundView.centerXAnchor),
             stackView.centerYAnchor.constraint(equalTo: backgroundView.centerYAnchor),
             
-            muteBtn.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            muteBtn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            muteButton!.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            muteButton!.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             
-            fullscreenBtn.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            fullscreenBtn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            fullscreenButton!.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            fullscreenButton!.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             
-            speedBtn.trailingAnchor.constraint(equalTo: fullscreenBtn.leadingAnchor, constant: -12),
-            speedBtn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
+            speedButton!.trailingAnchor.constraint(equalTo: fullscreenButton!.leadingAnchor, constant: -12),
+            speedButton!.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
         ])
     }
     
