@@ -219,6 +219,12 @@ final class VideoPlayerViewController: UIViewController {
     }
     
     private func activateControlsConstraints(slider: UISlider, timeLabel: UILabel, backgroundView: UIView, stackView: UIStackView) {
+        guard let muteButton = muteButton,
+              let fullscreenButton = fullscreenButton,
+              let speedButton = speedButton else {
+            return
+        }
+        
         NSLayoutConstraint.activate([
             slider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             slider.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
@@ -235,14 +241,14 @@ final class VideoPlayerViewController: UIViewController {
             stackView.centerXAnchor.constraint(equalTo: backgroundView.centerXAnchor),
             stackView.centerYAnchor.constraint(equalTo: backgroundView.centerYAnchor),
             
-            muteButton!.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            muteButton!.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            muteButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            muteButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             
-            fullscreenButton!.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            fullscreenButton!.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            fullscreenButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            fullscreenButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             
-            speedButton!.trailingAnchor.constraint(equalTo: fullscreenButton!.leadingAnchor, constant: -12),
-            speedButton!.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
+            speedButton.trailingAnchor.constraint(equalTo: fullscreenButton.leadingAnchor, constant: -12),
+            speedButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
         ])
     }
     
