@@ -111,7 +111,7 @@ final class VideoPlayerViewController: UIViewController {
         
         view.addSubview(slider)
         progressSlider = slider
-        controlElements.append(slider)
+        registerControl(slider)
     }
     
     private func setupTimeLabel() {
@@ -124,7 +124,7 @@ final class VideoPlayerViewController: UIViewController {
         
         view.addSubview(label)
         timeLabel = label
-        controlElements.append(label)
+        registerControl(label)
     }
     
     private func setupControlsBackground() -> UIView {
@@ -135,7 +135,7 @@ final class VideoPlayerViewController: UIViewController {
         bg.layer.masksToBounds = true
         
         view.addSubview(bg)
-        controlElements.append(bg)
+        registerControl(bg)
         
         return bg
     }
@@ -191,7 +191,7 @@ final class VideoPlayerViewController: UIViewController {
         
         view.addSubview(btn)
         speedButton = btn
-        controlElements.append(btn)
+        registerControl(btn)
     }
     
     private func setupMuteButton() {
@@ -203,7 +203,7 @@ final class VideoPlayerViewController: UIViewController {
         
         view.addSubview(btn)
         muteButton = btn
-        controlElements.append(btn)
+        registerControl(btn)
     }
     
     private func setupFullscreenButton() {
@@ -215,7 +215,7 @@ final class VideoPlayerViewController: UIViewController {
         
         view.addSubview(btn)
         fullscreenButton = btn
-        controlElements.append(btn)
+        registerControl(btn)
     }
     
     private func activateControlsConstraints(slider: UISlider, timeLabel: UILabel, backgroundView: UIView, stackView: UIStackView) {
@@ -250,6 +250,10 @@ final class VideoPlayerViewController: UIViewController {
             speedButton.trailingAnchor.constraint(equalTo: fullscreenButton.leadingAnchor, constant: -12),
             speedButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
         ])
+    }
+    
+    private func registerControl(_ view: UIView) {
+        controlElements.append(view)
     }
     
     private func setupProgressObserver() {
