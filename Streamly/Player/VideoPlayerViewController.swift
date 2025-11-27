@@ -27,13 +27,27 @@ final class VideoPlayerViewController: UIViewController {
     private let videoURL: URL
     private let autoplay: Bool
     private let defaultTimescale: CMTimeScale = 600
-    private var currentSpeed: Float = 1.0
+    private var currentSpeed: PlaybackSpeed = .normal
     private let progressUpdateInterval = CMTime(seconds: 0.1, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
     
-    private enum PlaybackSpeed: Float {
+    private enum PlaybackSpeed: Float, CaseIterable {
         case normal = 1.0
         case oneAndHalf = 1.5
         case double = 2.0
+        
+        var label: String {
+            switch self {
+            case .normal: return "1x"
+            case .oneAndHalf: return "1.5x"
+            case .double: return "2x"
+            }
+        }
+        
+        func next() -> PlaybackSpeed {
+            let all = PlaybackSpeed.allCases
+            let index = all.firstIndex(of: self)!
+            return index == all.count - 1 ? all[0] : all[index + 1]
+        }
     }
     
     init(url: URL, autoplay: Bool = false) {
@@ -389,19 +403,9 @@ final class VideoPlayerViewController: UIViewController {
     @objc private func toggleSpeed(_ sender: UIButton) {
         resetControlsHideTimer()
         
-        switch currentSpeed {
-        case PlaybackSpeed.normal.rawValue:
-            currentSpeed = PlaybackSpeed.oneAndHalf.rawValue
-            sender.setTitle("1.5x", for: .normal)
-        case PlaybackSpeed.oneAndHalf.rawValue:
-            currentSpeed = PlaybackSpeed.double.rawValue
-            sender.setTitle("2x", for: .normal)
-        default:
-            currentSpeed = PlaybackSpeed.normal.rawValue
-            sender.setTitle("1x", for: .normal)
-        }
-        
-        player?.rate = currentSpeed
+        currentSpeed = PlaybackSpeed(rawValue: currentSpeed.rawValue)!.next()
+        sender.setTitle(currentSpeed.label, for: .normal)
+        player?.rate = currentSpeed.rawValue
     }
     
     @objc private func toggleMute(_ sender: UIButton) {
