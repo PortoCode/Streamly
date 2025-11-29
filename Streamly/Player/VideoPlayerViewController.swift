@@ -50,6 +50,11 @@ final class VideoPlayerViewController: UIViewController {
         }
     }
     
+    private enum SkipInterval {
+        static let short: Double = 10
+        static let long: Double = 30
+    }
+    
     init(url: URL, autoplay: Bool = false) {
         self.videoURL = url
         self.autoplay = autoplay
@@ -385,7 +390,7 @@ final class VideoPlayerViewController: UIViewController {
         guard let player = player else { return }
         let newTime = CMTimeAdd(
             player.currentTime(),
-            CMTime(seconds: -10, preferredTimescale: defaultTimescale)
+            CMTime(seconds: -SkipInterval.short, preferredTimescale: defaultTimescale)
         )
         player.seek(to: newTime)
     }
@@ -395,7 +400,7 @@ final class VideoPlayerViewController: UIViewController {
         guard let player = player else { return }
         let newTime = CMTimeAdd(
             player.currentTime(),
-            CMTime(seconds: 10, preferredTimescale: defaultTimescale)
+            CMTime(seconds: SkipInterval.short, preferredTimescale: defaultTimescale)
         )
         player.seek(to: newTime)
     }
@@ -435,13 +440,13 @@ final class VideoPlayerViewController: UIViewController {
         if gesture.direction == .left {
             let newTime = CMTimeAdd(
                 player.currentTime(),
-                CMTime(seconds: 30, preferredTimescale: defaultTimescale)
+                CMTime(seconds: SkipInterval.long, preferredTimescale: defaultTimescale)
             )
             player.seek(to: newTime)
         } else if gesture.direction == .right {
             let newTime = CMTimeAdd(
                 player.currentTime(),
-                CMTime(seconds: -30, preferredTimescale: defaultTimescale)
+                CMTime(seconds: -SkipInterval.long, preferredTimescale: defaultTimescale)
             )
             player.seek(to: newTime)
         }
