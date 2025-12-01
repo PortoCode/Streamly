@@ -194,7 +194,7 @@ final class VideoPlayerViewController: UIViewController {
         btn.translatesAutoresizingMaskIntoConstraints = false
         
         var config = UIButton.Configuration.plain()
-        config.title = "1x"
+        config.title = currentSpeed.label
         config.baseForegroundColor = .systemBlue
         config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
             var out = incoming
@@ -409,8 +409,8 @@ final class VideoPlayerViewController: UIViewController {
     @objc private func toggleSpeed(_ sender: UIButton) {
         resetControlsHideTimer()
         
-        currentSpeed = PlaybackSpeed(rawValue: currentSpeed.rawValue)!.next()
-        sender.setTitle(currentSpeed.label, for: .normal)
+        currentSpeed = currentSpeed.next()
+        sender.configuration?.title = currentSpeed.label
         player?.rate = currentSpeed.rawValue
     }
     
