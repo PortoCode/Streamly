@@ -248,7 +248,7 @@ final class VideoPlayerViewController: UIViewController {
         NSLayoutConstraint.activate([
             slider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             slider.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            slider.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
+            slider.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -100),
             
             timeLabel.topAnchor.constraint(equalTo: slider.bottomAnchor, constant: 8),
             timeLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -261,10 +261,10 @@ final class VideoPlayerViewController: UIViewController {
             stackView.centerXAnchor.constraint(equalTo: backgroundView.centerXAnchor),
             stackView.centerYAnchor.constraint(equalTo: backgroundView.centerYAnchor),
             
-            muteButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            muteButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             muteButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             
-            fullscreenButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            fullscreenButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             fullscreenButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             
             speedButton.trailingAnchor.constraint(equalTo: fullscreenButton.leadingAnchor, constant: -12),
