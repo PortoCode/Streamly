@@ -94,9 +94,10 @@ final class VideoPlayerViewController: UIViewController {
         player = AVPlayer(playerItem: item)
         playerLayer = AVPlayerLayer(player: player)
         playerLayer?.videoGravity = .resizeAspect
-        if let layer = playerLayer {
-            view.layer.addSublayer(layer)
-        }
+        
+        guard let layer = playerLayer else { return }
+        view.layer.addSublayer(layer)
+        
         if autoplay {
             player?.play()
         }
