@@ -25,7 +25,3 @@ A minimal video streaming app built with Swift, UIKit, and SwiftUI.
 ## Architecture
 
 Clean Architecture (MVVM + Repository)
-
-## Preview
-
-...
